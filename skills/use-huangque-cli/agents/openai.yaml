@@ -1,0 +1,4 @@
+interface:
+  display_name: "Huangque CLI"
+  short_description: "Safely run all Huangque AI capabilities"
+  default_prompt: "Use $use-huangque-cli to discover and safely run a Huangque capability."
