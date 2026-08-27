@@ -18,7 +18,7 @@
 | Pi Agent | `~/.pi/agent/skills/use-huangque-cli` |
 | MCP | `hq mcp`，每项黄雀能力映射为独立工具 |
 
-CLI 0.11.0 起统一安装：
+CLI 0.12.0 起统一安装并提供 MCP：
 
 ```sh
 hq skill install deepseek
@@ -29,6 +29,27 @@ hq skill install mcp
 ```
 
 重复运行同一命令会检查版本并更新受管安装。已有但不受管的同名 Skill 不会被静默覆盖。
+
+## 模板成片示例（单条 / 批量）
+
+先读取实时可用的模板和输入合同；不要在文档或提示中保存模板 ID、字体或价格。
+
+```sh
+hq run matrix-template-capability --json
+hq run matrix-template-templates --json
+
+# 单条：按 live describe 写入 single.json；template_id 和可选 font_family 来自上一步
+hq describe matrix-template-generate --json
+hq run matrix-template-generate --input @single.json --json
+hq run matrix-template-generate --input @single.json --confirm --quote-token <quote_token> --json
+
+# 批量：按 live describe 写入 batch.json，并将 count 设为 2-5
+hq describe matrix-template-batch-generate --json
+hq run matrix-template-batch-generate --input @batch.json --json
+hq run matrix-template-batch-generate --input @batch.json --confirm --quote-token <quote_token> --json
+```
+
+每个单条或批量请求只报价一次、确认一次。保存全部返回的 `job_ids` 和原 `quote_token`；若批量部分成功或状态未知，保留已接受任务并按返回的结构化恢复指引处理，不能新建一批重试。
 
 ## B 站采集示例
 
@@ -47,7 +68,7 @@ printf '%s' '{"url":"<BILIBILI_URL>"}' | hq run collect-content --input @-
 - MCP 不提供任意终端命令入口。
 - 仓库不保存 Token、Cookie、客户数据或黄雀服务端秘密。
 
-版本和适配目标以 [`manifest.json`](manifest.json) 为准。Skill 独立发布，CLI 升级后重新校验兼容性，不强制共用版本号。
+版本和适配目标以 [`manifest.json`](manifest.json) 为准：Skill 核心最低支持 CLI 0.10.2，并仅使用实时发现中存在的能力；本版已测试、最新和安装器目标是 0.12.0；安装入口与 MCP 需 CLI 0.12.0。Skill 独立发布，CLI 升级后重新校验兼容性，不强制共用版本号。
 
 ## 开发验证
 
