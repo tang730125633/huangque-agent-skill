@@ -41,6 +41,22 @@ hq describe matrix-template-batch-generate --json
 - Quote the complete single or batch request once without `--confirm`, show the total, then submit that identical input once with `--confirm --quote-token <quote_token>` after explicit approval. Do not quote or confirm individual batch items separately.
 - Preserve every returned `job_id` and the original `quote_token`. If a batch is partial or its result is unknown, keep accepted jobs and follow the returned structured recovery instruction; do not create a fresh batch.
 
+## Director workflows
+
+Use direct Director actions only when live discovery lists them as `available`:
+
+```sh
+hq run director-capability --json
+hq describe director-script-generate --json
+hq describe director-breakdown --json
+```
+
+- Use `director-script-generate` for the main-site AI script workflow. Supply the topic or factual brief as `prompt`; use only the advertised style, duration, and platform enums.
+- Use `director-breakdown` for one public Douyin or Xiaohongshu link, or a `scenes` batch of at most five links. `reverse_prompt` accepts one link only.
+- These are paid actions. Quote the complete input first, show the returned point cost, and submit the identical input once with `--confirm --quote-token <quote_token>` only after explicit approval.
+- Keep the returned `job_id` and poll `task`; do not resubmit if the response is slow or uncertain.
+- A local image or video is not a URL. Do not pass a path or invent an upload token; local breakdown remains unavailable until `director-breakdown-upload` is reported as `available` by the live contract.
+
 ## Apply the confirmation gate
 
 - Run navigation and reads after identifying the requested target.
