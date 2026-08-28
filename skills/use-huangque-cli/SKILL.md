@@ -59,6 +59,14 @@ Pass one UTF-8 JSON object through stdin or `--input @file`, within the schema f
 - For collection, pass exactly one supported public content URL. Reject copied share commands, prose containing a URL, credentials, local paths, unsupported hosts, and unusual ports.
 - Follow the returned provider and channel constraints instead of relying on remembered model parameters.
 
+## Generate reference-image video
+
+Discover `image-upload`, `video-generate`, and `task` before composing the request. Upload only the user-selected JPEG, PNG, or WebP, then use the returned private `upload_id` in `reference_upload_ids`; reference its position as `@图片1`, `@图片2`, and so on in the prompt.
+
+For `channel=omni`, the current contract supports 1-6 reference images, `ratio=9:16|16:9`, `duration=3-10`, and `resolution=720p`. Treat the live `hq describe video-generate --json` output as authoritative if this changes. Quote once, show the cost, confirm the identical input once, and poll only the returned `job_id`.
+
+If `image-upload` reports an allowed MIME but the quote rejects that reference as a JPEG/PNG/WebP format error, stop. Preserve the upload ID, MIME, SHA-256, exact request, and error as compatibility evidence. Do not repeatedly upload or transcode the same image, bypass the CLI with a private endpoint, remove the reference without telling the user, or submit a new paid task. A failed quote has not authorized a debit.
+
 ## Verify delivery
 
 - Check the exit code, JSON `schema`, capability ID, and returned task or resource ID.
