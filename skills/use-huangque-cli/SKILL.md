@@ -49,13 +49,24 @@ Use direct Director actions only when live discovery lists them as `available`:
 hq run director-capability --json
 hq describe director-script-generate --json
 hq describe director-breakdown --json
+hq describe director-breakdown-upload --json
+hq describe director-scene-image-generate --json
 ```
 
 - Use `director-script-generate` for the main-site AI script workflow. Supply the topic or factual brief as `prompt`; use only the advertised style, duration, and platform enums.
 - Use `director-breakdown` for one public Douyin or Xiaohongshu link, or a `scenes` batch of at most five links. `reverse_prompt` accepts one link only.
-- These are paid actions. Quote the complete input first, show the returned point cost, and submit the identical input once with `--confirm --quote-token <quote_token>` only after explicit approval.
+- Use `director-breakdown-upload` for exactly one local image or video. Inspect its live MIME and size constraints, then submit only the user-selected file:
+
+```sh
+hq director-breakdown-upload --file <path> --confirm --json
+```
+
+- Use `director-scene-image-generate` to render one to eight Director scene descriptions. Preserve the requested `scene`, `line`, `dur`, `ratio`, and `quality` fields exactly as advertised by the live schema.
+- Script, link breakdown, and scene-image generation are quoted paid actions. Quote the complete input first, show the returned point cost, and submit the identical input once with `--confirm --quote-token <quote_token>` only after explicit approval.
+- Local breakdown upload uses the live fixed-confirm charge. Show its advertised cost first and pass `--confirm` only after explicit approval; do not invent or request a quote token for that upload transport.
 - Keep the returned `job_id` and poll `task`; do not resubmit if the response is slow or uncertain.
-- A local image or video is not a URL. Do not pass a path or invent an upload token; local breakdown remains unavailable until `director-breakdown-upload` is reported as `available` by the live contract.
+- A local image or video is not a URL. Never put a local path into `director-breakdown`; use the dedicated upload command only.
+- `director-scene-video-generate` and `director-scene-talking-generate` are intentionally excluded. Do not describe them as available, do not substitute another video capability, and do not attempt the Director buttons “一键生成视频” or “一键生成口播”.
 
 ## Apply the confirmation gate
 
