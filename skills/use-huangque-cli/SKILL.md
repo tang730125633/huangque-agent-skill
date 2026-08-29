@@ -49,13 +49,18 @@ Use direct Director actions only when live discovery lists them as `available`:
 hq run director-capability --json
 hq describe director-script-generate --json
 hq describe director-breakdown --json
+hq describe director-scene-video-generate --json
+hq describe director-scene-talking-generate --json
 ```
 
 - Use `director-script-generate` for the main-site AI script workflow. Supply the topic or factual brief as `prompt`; use only the advertised style, duration, and platform enums.
 - Use `director-breakdown` for one public Douyin or Xiaohongshu link, or a `scenes` batch of at most five links. `reverse_prompt` accepts one link only.
+- Use `director-scene-video-generate` for 1-8 frozen Director scenes that contain a scene description. Its optional duration is 1-15 seconds.
+- Use `director-scene-talking-generate` for 1-8 scenes that contain spoken lines. Select `avatar_id` from `video-avatars` and `voice` from `voices`; choose `spoken` or `recommend` only when the live schema advertises it.
 - These are paid actions. Quote the complete input first, show the returned point cost, and submit the identical input once with `--confirm --quote-token <quote_token>` only after explicit approval.
 - Keep the returned `job_id` and poll `task`; do not resubmit if the response is slow or uncertain.
 - A local image or video is not a URL. Do not pass a path or invent an upload token; local breakdown remains unavailable until `director-breakdown-upload` is reported as `available` by the live contract.
+- The one-click video and talking actions do not accept an image path or image upload ID. Do not invoke or emulate image upload or scene-image generation unless the live contract separately marks that action `available` and the user asks for it.
 
 ## Apply the confirmation gate
 
