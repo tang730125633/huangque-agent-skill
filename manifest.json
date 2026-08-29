@@ -14,11 +14,11 @@
   "files": [
     {
       "path": "skills/use-huangque-cli/SKILL.md",
-      "sha256": "de2a81933d7d76c7153ff00f0e93513faaee5ca4efed22e902581a2a96d4f755"
+      "sha256": "d50629d72ab6442fad7b7fd30f6768354b24c0c6c8b858083e50c3c3d2820738"
     },
     {
       "path": "skills/use-huangque-cli/agents/openai.yaml",
-      "sha256": "2b2457747f676e675beb5571521e6a3fa737471fd769567da4406698ce7aafee"
+      "sha256": "cdb28e155d5b8ff65301204cabe6649456f63cd69092ae95630dad5b21bf1f48"
     }
   ],
   "adapters": {
