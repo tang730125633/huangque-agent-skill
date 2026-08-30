@@ -68,7 +68,7 @@ printf '%s' '{"url":"<BILIBILI_URL>"}' | hq run collect-content --input @-
 - MCP 不提供任意终端命令入口。
 - 仓库不保存 Token、Cookie、客户数据或黄雀服务端秘密。
 
-版本和适配目标以 [`manifest.json`](manifest.json) 为准：Skill 核心最低支持 CLI 0.10.2，并仅使用实时发现中存在的能力；本版已测试、最新和安装器目标是 0.12.0；安装入口与 MCP 需 CLI 0.12.0。Skill 独立发布，CLI 升级后重新校验兼容性，不强制共用版本号。
+版本和适配目标以 [`manifest.json`](manifest.json) 为准：Skill 核心最低支持 CLI 0.10.2，并仅使用实时发现中存在的能力；本版已测试、最新和安装器目标是 0.13.1；安装入口与 MCP 需 CLI 0.12.0。Skill 独立发布，CLI 升级后重新校验兼容性，不强制共用版本号。
 
 ## 开发验证
 

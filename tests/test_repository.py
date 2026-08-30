@@ -28,16 +28,19 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertEqual(package["version"], version)
         self.assertEqual(package["pi"]["skills"], ["./skills/use-huangque-cli"])
 
+    def test_manifest_uses_deterministic_lf_newlines(self):
+        self.assertNotIn(b"\r", (ROOT / "manifest.json").read_bytes())
+
     def test_release_and_mcp_version_boundaries(self):
-        self.assertEqual(self.manifest["skill"]["version"], "0.1.1")
-        self.assertEqual(self.manifest["source_ref"], "v0.1.1")
+        self.assertEqual(self.manifest["skill"]["version"], "0.2.0")
+        self.assertEqual(self.manifest["source_ref"], "v0.2.0")
         self.assertEqual(
             self.manifest["cli"],
             {
                 "minimum": "0.10.2",
-                "tested": "0.12.0",
-                "latest": "0.12.0",
-                "installer": "0.12.0",
+                "tested": "0.13.1",
+                "latest": "0.13.1",
+                "installer": "0.13.1",
             },
         )
         self.assertEqual(self.manifest["adapters"]["mcp"]["minimum_cli"], "0.12.0")
@@ -77,6 +80,22 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("Do not invent template IDs, fonts, prices, or input fields.", workflow)
         self.assertIn("do not create a fresh batch.", workflow.lower())
         self.assertIn("only when the live capability discovery contains", workflow)
+
+    def test_director_upload_keeps_quote_cost_and_idempotent_recovery_contract(self):
+        text = (ROOT / "skills/use-huangque-cli/SKILL.md").read_text(encoding="utf-8")
+        workflow = text.split("## Director workflows\n", 1)[1].split("\n## ", 1)[0]
+        for phrase in (
+            "hq run director-breakdown-upload",
+            "--quote-token <quote_token>",
+            "--expected-cost <cost>",
+            "Idempotency-Key",
+            "same file",
+            "do not obtain a new quote",
+            "director-scene-video-generate",
+            "director-scene-talking-generate",
+        ):
+            self.assertIn(phrase, workflow)
+        self.assertNotIn("hq director-breakdown-upload", workflow)
 
 
 if __name__ == "__main__":

@@ -33,7 +33,9 @@ def main() -> int:
             print("manifest.json hashes are stale")
             return 1
         return 0
-    MANIFEST.write_text(expected, encoding="utf-8")
+    # Release manifests are hashed and checked on Linux.  Keep their bytes
+    # deterministic when this script is run from a Windows checkout.
+    MANIFEST.write_bytes(expected.encode("utf-8"))
     return 0
 
 
