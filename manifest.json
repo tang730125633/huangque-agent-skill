@@ -14,7 +14,7 @@
   "files": [
     {
       "path": "skills/use-huangque-cli/SKILL.md",
-      "sha256": "c064b03bc46600ced75104e7e73f637c331a81a95408e2b311e5408e4c26eff3"
+      "sha256": "2c6e2060e4649dcf461bc2237c2f0afb7fa11e804bf8c1de4a44ead49eb0e13a"
     },
     {
       "path": "skills/use-huangque-cli/agents/openai.yaml",

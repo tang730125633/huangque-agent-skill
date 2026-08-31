@@ -41,6 +41,18 @@ hq describe matrix-template-batch-generate --json
 - Quote the complete single or batch request once without `--confirm`, show the total, then submit that identical input once with `--confirm --quote-token <quote_token>` after explicit approval. Do not quote or confirm individual batch items separately.
 - Preserve every returned `job_id` and the original `quote_token`. If a batch is partial or its result is unknown, keep accepted jobs and follow the returned structured recovery instruction; do not create a fresh batch.
 
+## Digital-human one-click runs
+
+Use this workflow only when live discovery reports the normal one-click actions as available. Do not substitute a Precision action or infer availability from the website UI.
+
+1. Read `digital-human-oneclick-capability`, then describe the plan, consent, start, status, recover, and upload actions that the request needs.
+2. Upload only files the user explicitly selected. Use `digital-human-oneclick-material-upload` for customer images. For recording-driven narration, create one stable `dh-run-*` identifier and reuse it with `digital-human-oneclick-audio-upload --run-id`, plan, consent, and start.
+3. Run `digital-human-oneclick-plan` and preserve its exact `plan_digest`. Record consent only for the same run, plan digest, portrait digest, voice choice, and material policy.
+4. Run `digital-human-oneclick-start` without `--confirm` to obtain the server quote. After approval, repeat the identical input with the same `request_id`, `plan_digest`, and returned `quote_token` plus `--confirm`.
+5. Preserve the returned `run_id` and poll `digital-human-oneclick-status`. On a recoverable terminal step, call `digital-human-oneclick-recover` with the original `run_id` and `request_id`; never recreate completed or still-running children. Use abandon only when the user explicitly wants to stop future recovery.
+
+No quote or unconfirmed start may create a paid task. If status says `needs_attention` or `refund_pending`, do not retry; wait for the same run's billing state to settle. Accept only owner-scoped uploads, platform-authorized material, or user-approved AI-generated fictional material, and never infer consent to use another person's face or voice.
+
 ## Apply the confirmation gate
 
 - Run navigation and reads after identifying the requested target.
