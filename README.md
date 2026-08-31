@@ -99,9 +99,10 @@ printf '%s' '{"url":"<BILIBILI_URL>"}' | hq run collect-content --input @-
 
 | 项目 | 当前值 |
 | --- | --- |
-| Skill | `0.1.1` |
+| Skill | `0.2.0` |
 | CLI 最低支持 | `0.10.2` |
-| CLI 已测试 / 最新 / 安装器目标 | `0.12.0` |
+| CLI 已测试 / 最新 / 安装器目标 | `0.13.3` |
+| CLI 0.13.3 wheel SHA-256 | `8ac32937d032bd305788686c7ddf5b29b2b55caeb5c6af6f06a7ea9a3a80fe13` |
 | MCP 最低 CLI | `0.12.0` |
 
 Skill 只使用实时发现中存在的能力。Skill 独立发布，CLI 升级后重新校验兼容性，不强制共用版本号。

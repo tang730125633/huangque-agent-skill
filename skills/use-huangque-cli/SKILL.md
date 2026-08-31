@@ -53,6 +53,40 @@ Use this workflow only when live discovery reports the normal one-click actions 
 
 No quote or unconfirmed start may create a paid task. If status says `needs_attention` or `refund_pending`, do not retry; wait for the same run's billing state to settle. Accept only owner-scoped uploads, platform-authorized material, or user-approved AI-generated fictional material, and never infer consent to use another person's face or voice.
 
+## Director workflows
+
+Use direct Director actions only when live discovery lists them as `available`:
+
+```sh
+hq run director-capability --json
+hq describe director-script-generate --json
+hq describe director-breakdown --json
+hq describe director-breakdown-upload --json
+hq describe director-scene-image-generate --json
+```
+
+- Use `director-script-generate` for the main-site AI script workflow. Supply the topic or factual brief as `prompt`; use only the advertised style, duration, and platform enums.
+- Use `director-breakdown` for one public Douyin or Xiaohongshu link, or a `urls` batch of at most five links. `reverse_prompt` accepts one link only.
+- Use `director-breakdown-upload` for exactly one local image or video selected by the user. Inspect its live MIME and size constraints. First obtain a file-bound quote; this hashes the file locally without uploading it:
+
+```sh
+hq run director-breakdown-upload --file <absolute-path> --json
+```
+
+- Show the returned `cost` and wait for explicit approval. Then reuse the same file and `quote_token`, and pass the approved cost explicitly:
+
+```sh
+hq run director-breakdown-upload --file <absolute-path> --confirm \
+  --quote-token <quote_token> --expected-cost <cost> --json
+```
+
+- Use `director-scene-image-generate` to render one to eight Director scene descriptions. Preserve the requested `scene`, `line`, `dur`, `ratio`, and `quality` fields exactly as advertised by the live schema.
+- Script, link breakdown, and scene-image generation are quoted paid actions. Quote the complete input first, show the returned point cost, and submit the identical input once with `--confirm --quote-token <quote_token>` only after explicit approval.
+- Local breakdown upload is also quote-then-confirm. The CLI derives a stable `Idempotency-Key` from the quote token. If the confirmed upload response is uncertain, retry only with the same file, quote token, and expected cost; do not obtain a new quote.
+- Keep the returned `job_id` and poll `task`; do not create a new job merely because the task is slow.
+- A local image or video is not a URL. Never put a local path into `director-breakdown`; use the dedicated upload command only.
+- `director-scene-video-generate` and `director-scene-talking-generate` are intentionally excluded. Do not describe them as available, do not substitute another video capability, and do not attempt the Director buttons “一键生成视频” or “一键生成口播”.
+
 ## Apply the confirmation gate
 
 - Run navigation and reads after identifying the requested target.
