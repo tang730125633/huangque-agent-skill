@@ -38,9 +38,10 @@ class RepositoryContractTests(unittest.TestCase):
             self.manifest["cli"],
             {
                 "minimum": "0.10.2",
-                "tested": "0.13.1",
-                "latest": "0.13.1",
-                "installer": "0.13.1",
+                "tested": "0.13.3",
+                "latest": "0.13.3",
+                "installer": "0.13.3",
+                "installer_wheel_sha256": "8ac32937d032bd305788686c7ddf5b29b2b55caeb5c6af6f06a7ea9a3a80fe13",
             },
         )
         self.assertEqual(self.manifest["adapters"]["mcp"]["minimum_cli"], "0.12.0")
