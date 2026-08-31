@@ -1,22 +1,28 @@
+<p align="center">
+  <img src="./assets/readme/hero.webp" width="100%" alt="Zel and the orange cat organizing the Huangque Agent Skill workflow on a paper desk">
+</p>
+
 # Huangque Agent Skill
+
+**中文** | [English](#english)
 
 让 DeepSeek Harness、Codex、OpenClaw 和 Pi Agent 安全调用黄雀 CLI，并通过同一份能力清单提供标准 MCP 工具。
 
-## 仓库边界
+<p align="center">
+  <img src="./assets/readme/safety-flow.svg" width="100%" alt="Huangque safe run pipeline: select hq, check status, discover live capabilities, quote, confirm once, and verify the task">
+</p>
+
+<p align="center">
+  <img src="./assets/readme/install-map.svg" width="100%" alt="Huangque Agent Skill install map for DeepSeek Harness, Codex, OpenClaw, Pi Agent, and MCP">
+</p>
+
+## 这是什么
 
 - [`huangque-cli`](https://github.com/tang730125633/huangque-cli) 是执行层：鉴权、能力目录、参数校验、报价、确认、任务和结果。
 - 本仓库是 Agent 层：一份核心 `SKILL.md`、四个安装入口、MCP 兼容信息和版本合同。
 - 不在这里复制黄雀服务端实现，也不维护四份不同的 Skill。
 
-## 支持入口
-
-| 入口 | 安装目标 |
-| --- | --- |
-| DeepSeek Harness | `~/.dsh/skills/use-huangque-cli` |
-| Codex | `~/.codex/skills/use-huangque-cli` |
-| OpenClaw | `~/.openclaw/skills/use-huangque-cli` |
-| Pi Agent | `~/.pi/agent/skills/use-huangque-cli` |
-| MCP | `hq mcp`，每项黄雀能力映射为独立工具 |
+## 快速安装
 
 CLI 0.12.0 起统一安装并提供 MCP：
 
@@ -29,6 +35,33 @@ hq skill install mcp
 ```
 
 重复运行同一命令会检查版本并更新受管安装。已有但不受管的同名 Skill 不会被静默覆盖。
+
+## 支持入口
+
+| 入口 | 安装目标 |
+| --- | --- |
+| DeepSeek Harness | `~/.dsh/skills/use-huangque-cli` |
+| Codex | `~/.codex/skills/use-huangque-cli` |
+| OpenClaw | `~/.openclaw/skills/use-huangque-cli` |
+| Pi Agent | `~/.pi/agent/skills/use-huangque-cli` |
+| MCP | `hq mcp`，每项黄雀能力映射为独立工具 |
+
+## Agent 安全合同
+
+1. 先固定同一个 `hq` 可执行文件，并运行 `hq version --json`。
+2. 账号相关任务先运行 `hq status --json`，未授权时让用户完成 `hq login --json`。
+3. 能力、字段、价格、限制、供应商和任务状态都以实时发现为准：
+
+```sh
+hq capabilities --json
+hq describe <capability> --json
+```
+
+4. 查询、预览和报价可直接执行；扣费、采集、生成、覆盖和上传必须明确确认。
+5. 付费动作先报价，展示费用；用户同意后只用同一份输入加 `--confirm --quote-token <quote_token>` 提交一次。
+6. 未知状态的创建任务不得自动重试；保留原 `request_id`、`job_id`、`quote_token` 并查询原任务。
+7. MCP 不提供任意终端命令入口。
+8. 仓库不保存 Token、Cookie、客户数据或黄雀服务端秘密。
 
 ## 模板成片示例（单条 / 批量）
 
@@ -60,15 +93,19 @@ printf '%s' '{"url":"<BILIBILI_URL>"}' | hq run collect-content --input @-
 
 第一条运行只取得服务端报价。只有用户明确同意报价后，才可用完全相同的输入加上 `--confirm --quote-token <quote_token>` 提交。
 
-## 安全合同
+## 版本合同
 
-- 查询、预览和报价可直接执行。
-- 扣费、采集、生成、覆盖和上传必须明确确认。
-- 未知状态的创建任务不得自动重试。
-- MCP 不提供任意终端命令入口。
-- 仓库不保存 Token、Cookie、客户数据或黄雀服务端秘密。
+版本和适配目标以 [`manifest.json`](manifest.json) 为准。
 
-版本和适配目标以 [`manifest.json`](manifest.json) 为准：Skill 核心最低支持 CLI 0.10.2，并仅使用实时发现中存在的能力；本版已测试、最新和安装器目标是 0.13.3，公开 wheel SHA-256 为 `8ac32937d032bd305788686c7ddf5b29b2b55caeb5c6af6f06a7ea9a3a80fe13`；安装入口与 MCP 需 CLI 0.12.0。Skill 独立发布，CLI 升级后重新校验兼容性，不强制共用版本号。
+| 项目 | 当前值 |
+| --- | --- |
+| Skill | `0.2.0` |
+| CLI 最低支持 | `0.10.2` |
+| CLI 已测试 / 最新 / 安装器目标 | `0.13.3` |
+| CLI 0.13.3 wheel SHA-256 | `8ac32937d032bd305788686c7ddf5b29b2b55caeb5c6af6f06a7ea9a3a80fe13` |
+| MCP 最低 CLI | `0.12.0` |
+
+Skill 只使用实时发现中存在的能力。Skill 独立发布，CLI 升级后重新校验兼容性，不强制共用版本号。
 
 ## 开发验证
 
@@ -76,5 +113,14 @@ printf '%s' '{"url":"<BILIBILI_URL>"}' | hq run collect-content --input @-
 python3 scripts/build_manifest.py --check
 python3 -m unittest discover -s tests -v
 ```
+
+## English
+
+Huangque Agent Skill is the public Agent-layer contract for safely using the Huangque `hq` CLI from DeepSeek Harness, Codex, OpenClaw, Pi Agent, and MCP.
+
+- `huangque-cli` remains the execution layer for authentication, live capability discovery, validation, quotes, confirmation, jobs, and results.
+- This repository ships one canonical `SKILL.md`, managed install targets, MCP compatibility metadata, and immutable file hashes.
+- Agents must discover the live contract with `hq capabilities --json` and `hq describe <capability> --json`; they must not guess undocumented fields, prices, providers, or limits.
+- Paid or externally mutating actions require a quote first, explicit user approval, then one confirmed submission with the same input and `quote_token`.
 
 MIT License
