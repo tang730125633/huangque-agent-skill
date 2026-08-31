@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/readme/hero.webp" width="100%" alt="Zel and the orange cat organizing the Huangque Agent Skill workflow on a paper desk">
+  <img src="./assets/readme/hero.webp" width="100%" alt="Zel and the orange cat guiding four paper Agent inputs through the Huangque confirmation machine">
 </p>
 
 # Huangque Agent Skill
