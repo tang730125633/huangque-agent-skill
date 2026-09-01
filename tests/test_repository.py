@@ -32,16 +32,16 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertNotIn(b"\r", (ROOT / "manifest.json").read_bytes())
 
     def test_release_and_mcp_version_boundaries(self):
-        self.assertEqual(self.manifest["skill"]["version"], "0.2.0")
-        self.assertEqual(self.manifest["source_ref"], "v0.2.0")
+        self.assertEqual(self.manifest["skill"]["version"], "0.2.1")
+        self.assertEqual(self.manifest["source_ref"], "v0.2.1")
         self.assertEqual(
             self.manifest["cli"],
             {
                 "minimum": "0.10.2",
-                "tested": "0.13.3",
-                "latest": "0.13.3",
-                "installer": "0.13.3",
-                "installer_wheel_sha256": "8ac32937d032bd305788686c7ddf5b29b2b55caeb5c6af6f06a7ea9a3a80fe13",
+                "tested": "0.13.5",
+                "latest": "0.13.5",
+                "installer": "0.13.5",
+                "installer_wheel_sha256": "387c686e83d2976ade3ec8ee29210c450792dd5e5c51369b8a6fcf07b2eb9fab",
             },
         )
         self.assertEqual(self.manifest["adapters"]["mcp"]["minimum_cli"], "0.12.0")
@@ -97,6 +97,27 @@ class RepositoryContractTests(unittest.TestCase):
         ):
             self.assertIn(phrase, workflow)
         self.assertNotIn("hq director-breakdown-upload", workflow)
+
+    def test_digital_human_run_keeps_identity_billing_and_recovery_contracts(self):
+        text = (ROOT / "skills/use-huangque-cli/SKILL.md").read_text(encoding="utf-8")
+        workflow = text.split("## Digital-human one-click runs\n", 1)[1].split("\n## ", 1)[0]
+        for phrase in (
+            "digital-human-oneclick-capability",
+            "digital-human-oneclick-material-upload",
+            "digital-human-oneclick-audio-upload",
+            "--run-id",
+            "plan_digest",
+            "request_id",
+            "quote_token",
+            "digital-human-oneclick-status",
+            "digital-human-oneclick-recover",
+            "refund_pending",
+        ):
+            self.assertIn(phrase, workflow)
+        self.assertIn("never recreate completed or still-running children", workflow)
+        self.assertIn("never infer consent", workflow)
+        self.assertIn("Plan and start do not accept a `run_id` field.", workflow)
+        self.assertIn("Preserve both the returned `run_id` and the original `request_id`", workflow)
 
 
 if __name__ == "__main__":
