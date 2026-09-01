@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -98,26 +99,65 @@ class RepositoryContractTests(unittest.TestCase):
             self.assertIn(phrase, workflow)
         self.assertNotIn("hq director-breakdown-upload", workflow)
 
-    def test_digital_human_run_keeps_identity_billing_and_recovery_contracts(self):
+    def _digital_human_route(self, mode):
         text = (ROOT / "skills/use-huangque-cli/SKILL.md").read_text(encoding="utf-8")
         workflow = text.split("## Digital-human one-click runs\n", 1)[1].split("\n## ", 1)[0]
+        prefix = f"| `{mode}` |"
+        row = next(line for line in workflow.splitlines() if line.startswith(prefix))
+        cells = [cell.strip() for cell in row.strip("|").split("|")]
+        self.assertEqual(5, len(cells))
+        return workflow, cells, [set(re.findall(r"`([^`]+)`", cell)) for cell in cells]
+
+    def test_digital_human_text_run_has_complete_field_routing(self):
+        workflow, cells, route = self._digital_human_route("text")
+        self.assertEqual({"text"}, route[0])
+        self.assertEqual({"dh-run-*"}, route[1])
+        self.assertEqual({"narration_mode=text", "script", "run_id"}, route[2])
+        self.assertEqual(
+            {"run_id", "plan_digest", "narration_mode=text", "script"}, route[3]
+        )
+        self.assertEqual(
+            {
+                "request_id", "consent_token", "plan_digest",
+                "narration_mode=text", "script", "run_id",
+            },
+            route[4],
+        )
+        self.assertIn("no `run_id`", cells[2])
+        self.assertIn("no `run_id`", cells[4])
+        self.assertIn("Before either text or audio narration", workflow)
+        self.assertIn("same client run identifier", workflow)
+
+    def test_digital_human_audio_run_has_complete_field_routing(self):
+        workflow, cells, route = self._digital_human_route("audio")
+        self.assertEqual({"audio"}, route[0])
+        self.assertEqual({"dh-run-*", "--run-id"}, route[1])
+        self.assertEqual(
+            {"narration_mode=audio", "audio_upload_id", "run_id"}, route[2]
+        )
+        self.assertEqual(
+            {"run_id", "plan_digest", "narration_mode=audio", "audio_upload_id"},
+            route[3],
+        )
+        self.assertEqual(
+            {
+                "request_id", "consent_token", "plan_digest",
+                "narration_mode=audio", "audio_upload_id", "run_id",
+            },
+            route[4],
+        )
+        self.assertIn("no `run_id`", cells[2])
+        self.assertIn("no `run_id`", cells[4])
         for phrase in (
-            "digital-human-oneclick-capability",
-            "digital-human-oneclick-material-upload",
             "digital-human-oneclick-audio-upload",
-            "--run-id",
-            "plan_digest",
-            "request_id",
             "quote_token",
             "digital-human-oneclick-status",
             "digital-human-oneclick-recover",
             "refund_pending",
+            "never recreate completed or still-running children",
+            "never infer consent",
         ):
             self.assertIn(phrase, workflow)
-        self.assertIn("never recreate completed or still-running children", workflow)
-        self.assertIn("never infer consent", workflow)
-        self.assertIn("Plan and start do not accept a `run_id` field.", workflow)
-        self.assertIn("Preserve both the returned `run_id` and the original `request_id`", workflow)
 
 
 if __name__ == "__main__":
