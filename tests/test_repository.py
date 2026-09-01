@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -32,16 +33,16 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertNotIn(b"\r", (ROOT / "manifest.json").read_bytes())
 
     def test_release_and_mcp_version_boundaries(self):
-        self.assertEqual(self.manifest["skill"]["version"], "0.2.0")
-        self.assertEqual(self.manifest["source_ref"], "v0.2.0")
+        self.assertEqual(self.manifest["skill"]["version"], "0.2.1")
+        self.assertEqual(self.manifest["source_ref"], "v0.2.1")
         self.assertEqual(
             self.manifest["cli"],
             {
                 "minimum": "0.10.2",
-                "tested": "0.13.3",
-                "latest": "0.13.3",
-                "installer": "0.13.3",
-                "installer_wheel_sha256": "8ac32937d032bd305788686c7ddf5b29b2b55caeb5c6af6f06a7ea9a3a80fe13",
+                "tested": "0.13.5",
+                "latest": "0.13.5",
+                "installer": "0.13.5",
+                "installer_wheel_sha256": "387c686e83d2976ade3ec8ee29210c450792dd5e5c51369b8a6fcf07b2eb9fab",
             },
         )
         self.assertEqual(self.manifest["adapters"]["mcp"]["minimum_cli"], "0.12.0")
@@ -97,6 +98,66 @@ class RepositoryContractTests(unittest.TestCase):
         ):
             self.assertIn(phrase, workflow)
         self.assertNotIn("hq director-breakdown-upload", workflow)
+
+    def _digital_human_route(self, mode):
+        text = (ROOT / "skills/use-huangque-cli/SKILL.md").read_text(encoding="utf-8")
+        workflow = text.split("## Digital-human one-click runs\n", 1)[1].split("\n## ", 1)[0]
+        prefix = f"| `{mode}` |"
+        row = next(line for line in workflow.splitlines() if line.startswith(prefix))
+        cells = [cell.strip() for cell in row.strip("|").split("|")]
+        self.assertEqual(5, len(cells))
+        return workflow, cells, [set(re.findall(r"`([^`]+)`", cell)) for cell in cells]
+
+    def test_digital_human_text_run_has_complete_field_routing(self):
+        workflow, cells, route = self._digital_human_route("text")
+        self.assertEqual({"text"}, route[0])
+        self.assertEqual({"dh-run-*"}, route[1])
+        self.assertEqual({"narration_mode=text", "script", "run_id"}, route[2])
+        self.assertEqual(
+            {"run_id", "plan_digest", "narration_mode=text", "script"}, route[3]
+        )
+        self.assertEqual(
+            {
+                "request_id", "consent_token", "plan_digest",
+                "narration_mode=text", "script", "run_id",
+            },
+            route[4],
+        )
+        self.assertIn("no `run_id`", cells[2])
+        self.assertIn("no `run_id`", cells[4])
+        self.assertIn("Before either text or audio narration", workflow)
+        self.assertIn("same client run identifier", workflow)
+
+    def test_digital_human_audio_run_has_complete_field_routing(self):
+        workflow, cells, route = self._digital_human_route("audio")
+        self.assertEqual({"audio"}, route[0])
+        self.assertEqual({"dh-run-*", "--run-id"}, route[1])
+        self.assertEqual(
+            {"narration_mode=audio", "audio_upload_id", "run_id"}, route[2]
+        )
+        self.assertEqual(
+            {"run_id", "plan_digest", "narration_mode=audio", "audio_upload_id"},
+            route[3],
+        )
+        self.assertEqual(
+            {
+                "request_id", "consent_token", "plan_digest",
+                "narration_mode=audio", "audio_upload_id", "run_id",
+            },
+            route[4],
+        )
+        self.assertIn("no `run_id`", cells[2])
+        self.assertIn("no `run_id`", cells[4])
+        for phrase in (
+            "digital-human-oneclick-audio-upload",
+            "quote_token",
+            "digital-human-oneclick-status",
+            "digital-human-oneclick-recover",
+            "refund_pending",
+            "never recreate completed or still-running children",
+            "never infer consent",
+        ):
+            self.assertIn(phrase, workflow)
 
 
 if __name__ == "__main__":

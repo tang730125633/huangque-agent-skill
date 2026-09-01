@@ -41,6 +41,25 @@ hq describe matrix-template-batch-generate --json
 - Quote the complete single or batch request once without `--confirm`, show the total, then submit that identical input once with `--confirm --quote-token <quote_token>` after explicit approval. Do not quote or confirm individual batch items separately.
 - Preserve every returned `job_id` and the original `quote_token`. If a batch is partial or its result is unknown, keep accepted jobs and follow the returned structured recovery instruction; do not create a fresh batch.
 
+## Digital-human one-click runs
+
+Use this workflow only when live discovery reports the normal one-click actions as available. Do not substitute a Precision action or infer availability from the website UI.
+
+1. Read `digital-human-oneclick-capability`, then describe the plan, consent, start, status, recover, and upload actions that the request needs.
+2. Before either text or audio narration, create and preserve one stable client `dh-run-*` identifier. Use it as consent's `run_id` in both modes. Only audio narration also passes it to `digital-human-oneclick-audio-upload --run-id`; preserve the returned `audio_upload_id`. Upload only files the user explicitly selected, and use `digital-human-oneclick-material-upload` for customer images.
+3. Follow this field routing exactly. Plan and start never accept a `run_id` field:
+
+| Mode | Client run identity | Plan | Consent | Start |
+| --- | --- | --- | --- | --- |
+| `text` | create `dh-run-*`; no audio upload | `narration_mode=text`, `script`; no `run_id` | same `run_id`, `plan_digest`, `narration_mode=text`, `script` | stable `request_id`, `consent_token`, `plan_digest`, `narration_mode=text`, `script`; no `run_id` |
+| `audio` | create `dh-run-*`; audio upload `--run-id` | `narration_mode=audio`, `audio_upload_id`; no `run_id` | same `run_id`, `plan_digest`, `narration_mode=audio`, `audio_upload_id` | stable `request_id`, `consent_token`, `plan_digest`, `narration_mode=audio`, `audio_upload_id`; no `run_id` |
+
+4. Run `digital-human-oneclick-plan` and preserve its exact `plan_digest`. Record consent only for the same client run identifier, plan digest, portrait digest, voice choice, narration inputs, and material policy.
+5. Create and preserve one stable `request_id`. Run `digital-human-oneclick-start` without `--confirm` to obtain the server quote. After approval, repeat the identical input with the same `request_id`, `plan_digest`, and returned `quote_token` plus `--confirm`.
+6. Preserve both the server-returned `run_id` and the original `request_id`, then poll `digital-human-oneclick-status`. On a recoverable terminal step, call `digital-human-oneclick-recover` with that pair; never recreate completed or still-running children. Use abandon only when the user explicitly wants to stop future recovery.
+
+No quote or unconfirmed start may create a paid task. If status says `needs_attention` or `refund_pending`, do not retry; wait for the same run's billing state to settle. Accept only owner-scoped uploads, platform-authorized material, or user-approved AI-generated fictional material, and never infer consent to use another person's face or voice.
+
 ## Director workflows
 
 Use direct Director actions only when live discovery lists them as `available`:
