@@ -33,16 +33,16 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertNotIn(b"\r", (ROOT / "manifest.json").read_bytes())
 
     def test_release_and_mcp_version_boundaries(self):
-        self.assertEqual(self.manifest["skill"]["version"], "0.3.0")
-        self.assertEqual(self.manifest["source_ref"], "v0.3.0")
+        self.assertEqual(self.manifest["skill"]["version"], "0.4.0")
+        self.assertEqual(self.manifest["source_ref"], "v0.4.0")
         self.assertEqual(
             self.manifest["cli"],
             {
                 "minimum": "0.10.2",
-                "tested": "0.13.5",
-                "latest": "0.13.5",
-                "installer": "0.13.5",
-                "installer_wheel_sha256": "387c686e83d2976ade3ec8ee29210c450792dd5e5c51369b8a6fcf07b2eb9fab",
+                "tested": "0.15.0",
+                "latest": "0.15.0",
+                "installer": "0.15.0",
+                "installer_wheel_sha256": "939b9c76290b2cca0162413130f3a0943180dabb0fc950d62061fd3f17872c9c",
             },
         )
         self.assertEqual(self.manifest["adapters"]["mcp"]["minimum_cli"], "0.12.0")

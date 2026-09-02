@@ -24,6 +24,18 @@ hq describe <capability> --json
 
 Treat those outputs as authoritative. Do not guess undocumented capability IDs, fields, URLs, providers, limits, methods, or costs. A navigation capability only returns or opens a Huangque page; it does not prove that a generation, order, payment, upload, or Bot change occurred.
 
+## Website parity actions
+
+CLI 0.15.0 exposes normal-user website actions as fixed, typed capabilities instead of an arbitrary URL or method proxy. Always describe the exact action before use.
+
+- Creator Agent, invitation, notifications, friends, profile, asset management, canvas members, digital-IP reports, and short-drama project/script/character/scene/autodraft/refinement actions use their dedicated capability IDs and live schemas.
+- Use `profile-avatar-upload` and `video-import` with one explicit `--file`; use `asset-batch-download` or `creator-agent-background-pdf` with one new absolute `--output` path. Never place a local path inside JSON.
+- Read the latest project/workspace before a short-drama write. Preserve the exact `revision`, `project_revision`, `graph_revision`, `version_id`, `shot_key`, `plan_id`, or `request_id` required by `describe`; do not substitute similarly named IDs.
+- `task-delete`, member removal, asset deletion, project mutation, and all other writes still require explicit confirmation.
+- Password changes, point transfers that require a password, payment confirmation, local browser preferences, clipboard/QR rendering, and canvas JPG export remain browser handoffs. Never accept a password, payment credential, OTP, Cookie, or API key through CLI input.
+
+If a visible website action has no direct capability, inspect the live backend contract. Do not claim parity from `website_operations` metadata or a navigation link alone.
+
 ## Template videos
 
 For a template-video request, use this workflow only when the live capability discovery contains these template capabilities. First read the live template contract and catalog, then inspect the operation being used:
