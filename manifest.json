@@ -2,7 +2,7 @@
   "schema": "huangque.agent-skill/v1",
   "skill": {
     "name": "use-huangque-cli",
-    "version": "0.2.1"
+    "version": "0.3.0"
   },
   "cli": {
     "minimum": "0.10.2",
@@ -11,11 +11,11 @@
     "installer": "0.13.5",
     "installer_wheel_sha256": "387c686e83d2976ade3ec8ee29210c450792dd5e5c51369b8a6fcf07b2eb9fab"
   },
-  "source_ref": "v0.2.1",
+  "source_ref": "v0.3.0",
   "files": [
     {
       "path": "skills/use-huangque-cli/SKILL.md",
-      "sha256": "4b92c332c5c1e4b20fa50ec709ad7b6dabc825dc91d21dad3c1f1ef74895faa4"
+      "sha256": "89b29f542db6cd23fe7ae4db0ec3f19bded6fd0db3c1f8f1f84ad63a17a4a57f"
     },
     {
       "path": "skills/use-huangque-cli/agents/openai.yaml",
