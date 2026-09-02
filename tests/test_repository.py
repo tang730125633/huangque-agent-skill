@@ -33,8 +33,8 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertNotIn(b"\r", (ROOT / "manifest.json").read_bytes())
 
     def test_release_and_mcp_version_boundaries(self):
-        self.assertEqual(self.manifest["skill"]["version"], "0.2.1")
-        self.assertEqual(self.manifest["source_ref"], "v0.2.1")
+        self.assertEqual(self.manifest["skill"]["version"], "0.3.0")
+        self.assertEqual(self.manifest["source_ref"], "v0.3.0")
         self.assertEqual(
             self.manifest["cli"],
             {

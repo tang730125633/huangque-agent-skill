@@ -1,6 +1,6 @@
 {
   "name": "huangque-agent-skill",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "private": true,
   "description": "Huangque CLI skill for DeepSeek Harness, Codex, OpenClaw, and Pi Agent",
   "license": "MIT",

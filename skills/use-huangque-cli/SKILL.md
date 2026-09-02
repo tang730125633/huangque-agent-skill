@@ -70,6 +70,8 @@ hq describe director-script-generate --json
 hq describe director-breakdown --json
 hq describe director-breakdown-upload --json
 hq describe director-scene-image-generate --json
+hq describe director-scene-video-generate --json
+hq describe director-scene-talking-generate --json
 ```
 
 - Use `director-script-generate` for the main-site AI script workflow. Supply the topic or factual brief as `prompt`; use only the advertised style, duration, and platform enums.
@@ -88,11 +90,30 @@ hq run director-breakdown-upload --file <absolute-path> --confirm \
 ```
 
 - Use `director-scene-image-generate` to render one to eight Director scene descriptions. Preserve the requested `scene`, `line`, `dur`, `ratio`, and `quality` fields exactly as advertised by the live schema.
-- Script, link breakdown, and scene-image generation are quoted paid actions. Quote the complete input first, show the returned point cost, and submit the identical input once with `--confirm --quote-token <quote_token>` only after explicit approval.
+- Scene video reuses the live video channel rules; scene talking reuses the live text-video template, style, voice, and material rules. Script, breakdown, scene image, scene video, and scene talking are quoted paid actions. Quote the complete input first, show the returned point cost, and submit the identical input once with `--confirm --quote-token <quote_token>` only after explicit approval.
 - Local breakdown upload is also quote-then-confirm. The CLI derives a stable `Idempotency-Key` from the quote token. If the confirmed upload response is uncertain, retry only with the same file, quote token, and expected cost; do not obtain a new quote.
 - Keep the returned `job_id` and poll `task`; do not create a new job merely because the task is slow.
 - A local image or video is not a URL. Never put a local path into `director-breakdown`; use the dedicated upload command only.
-- `director-scene-video-generate` and `director-scene-talking-generate` are intentionally excluded. Do not describe them as available, do not substitute another video capability, and do not attempt the Director buttons “一键生成视频” or “一键生成口播”.
+- Use `director-chat` only after explicit confirmation because it calls external AI and creates a zero-point job. Poll that job; if its result contains a `production_offer`, show the frozen cost and confirm only that exact offer through `director-produce`.
+- Create a durable workflow from an owned completed script/breakdown job or explicit storyboard with `director-workflow-create`. Preserve `workflow_id` and the latest `revision`; update with `director-storyboard-update`, and use `director-storyboard-export` for Markdown.
+- Production and remake are server-owned runs: call the matching `*-plan` with confirmation, preserve `plan_digest`, then call `*-start` once without confirmation to obtain the server quote. After approval, repeat the identical start input with `--confirm --quote-token`. Poll `*-status`; call `*-recover` only for the same result-unknown run and the same `request_id`.
+
+## Short-drama production
+
+Use the staged actions only when the project and current revision come from live reads.
+
+1. Use `short-drama-advisor` with `--confirm` for a platform-funded external-AI planning turn; preserve its `request_id` for an identical retry.
+2. `short-drama-character-reference-generate` is paid: quote first, then confirm the identical project/revision/character input. Poll the returned job and lock only the completed `reference_version` with `short-drama-character-reference-confirm`.
+3. Generate and confirm the production plan with `short-drama-preflight-plan` and `short-drama-preflight-confirm`; both are writes and require `--confirm`.
+4. For each shot, call `short-drama-autodraft-preflight` with confirmation, then `short-drama-autodraft-quote`. Put that native quote token in `short-drama-autodraft-start` input and pass `--confirm`; preserve its `request_id` and poll only `short-drama-autodraft-status`.
+5. Use `short-drama-delivery-quote`, then put that native quote token in `short-drama-delivery-start` and pass `--confirm`. Poll only `short-drama-delivery-status`.
+6. Read `short-drama-completion-readiness`. Only the owner may pass its exact revision, final version, asset, and delivery hash to `short-drama-completion-confirm`; this is irreversible and requires explicit confirmation.
+
+Never substitute a fresh quote, request ID, project revision, plan, shot, or delivery version when recovering an existing paid operation.
+
+## No-watermark download
+
+Use `dl` only with a media URL already returned by Huangque and one explicit absolute `--output` path. The client refuses redirects, symlinked parent directories, files over 2 GiB, and any existing destination. It sends a Channels decode key in a header rather than the URL. Downloading is free and never creates a generation job.
 
 ## Apply the confirmation gate
 
